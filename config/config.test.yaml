@@ -1,0 +1,46 @@
+# 通用配置
+server_config:
+  is_proxy: true
+  proxy_url: "127.0.0.1::10809"
+
+# 日志配置
+log:
+  level: "info"
+  detail: false
+
+# tg配置
+tg_config:
+  token: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+  session_id_warning: "123456789"
+  session_id_statistics: "123456789"
+  session_id_report: "123456789"
+
+# 下单模块
+order:
+  s1_delay_time: 5  # 单位ms
+  symbol:
+    symbol_black_list:  [ ]
+    symbol_white_list:  [ ]
+    symbol_free_charge: [ ]
+  hold_coins: []
+
+# 资金平衡模块
+balance:
+  interval: 3600     # 单位s
+  balance_threshold: 0.01
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

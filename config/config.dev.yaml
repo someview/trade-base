@@ -1,0 +1,71 @@
+server_config:
+  is_proxy: false
+  proxy_url: "http://127.0.0.1:8080"
+  server_id: "http://127.0.0.1:8080"
+  enable_safe_check: true  # 程序启动时是否进行安全检查
+
+
+tg_config:
+  token: "7786538224:AAEpu96DMiZt31JwDI6yqRgk9o1v9TrHWtA"
+  chat_id_statistics: -4703386909
+  chat_id_warning:  -4617526406
+  chat_id_report:  -4778589470
+
+
+strategy_config:
+  multi_ip_mode:  false                # 是否启用多ip模式订阅行情
+  price_filter_rate_threshold:  0.01   #
+  only_base_white_list: false          #
+  base_white_list:                     # 当only_base_white_list为true时配置
+  symbol_zero_fee_list:                # 免费交易对, 这里应该确认，所有免费交易对信息都是一致的
+    - "BTCUSDT"
+    - "ETHUSDT"
+    - "BNBUSDT"
+    - "XRPUSDT"
+    - "ADAUSDT"
+    - "DOGEUSDT"
+    - "DOTUSDT"
+    - "SOLUSDT"
+    - "MATICUSDT"
+    - "UNIUSDT"
+    - "AVAXUSDT"
+    - "LINKUSDT"
+    - "LTCUSDT"
+    - "XLMUSDT"
+  symbol_white_list:
+
+  symbol_black_list:
+    - "BTCUSDT"
+    - "ETHUSDT"
+    - "BNBUSDT"
+    - "XRPUSDT"
+    - "ADAUSDT"
+    - "DOGEUSDT"
+    - "DOTUSDT"
+    - "SOLUSDT"
+    - "MATICUSDT"
+    - "UNIUSDT"
+    - "AVAXUSDT"
+    - "LINKUSDT"
+    - "LTCUSDT"
+    - "XLMUSDT"
+
+  account_list:
+    - ed25519_api_key: pGd7bOukdL7FkfhxAyVsaWk8nTTqGQWDhUQm4vdyQQLTZHNdXkNxZsbAP8jKQMeD
+      ed25519_private_key: |-
+        -----BEGIN PRIVATE KEY-----
+        MC4CAQAwBQYDK2VwBCIEIB2Z8Kdhv/hSTx9uBRv3o9lIhe4R1OBC8bUSHG47gj36
+        -----END PRIVATE KEY-----
+      hold_coin: "USDT"
+      nick_name: "Account_1"
+      stop_loss_threshold: 0.03    # 账户亏损停用阈值，单位为百分比
+
+
+
+
+
+
+
+
+
+
