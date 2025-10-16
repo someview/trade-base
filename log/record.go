@@ -183,6 +183,10 @@ func (r *Record) appendAnyValue(val interface{}, currentDepth, maxDepth int) {
 	switch rv.Kind() {
 	case reflect.Struct:
 		// 传递增加后的深度
+			if t, ok := val.(time.Time); ok {
+			r.writeTime(t)
+			return
+		}
 		r.formatStruct(rv, currentDepth+1, maxDepth)
 	case reflect.Map:
 		// 传递增加后的深度
