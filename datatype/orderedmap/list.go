@@ -1,6 +1,10 @@
 package orderedmap
 
-import "cmp"
+import (
+	"cmp"
+
+	"github.com/someview/trade-base/datatype/compare"
+)
 
 // Element 是双向链表中的一个元素
 type Element[K comparable, V any] struct {
@@ -26,14 +30,15 @@ func (e *Element[K, V]) Prev() *Element[K, V] {
 
 // list 表示双向链表
 // 链表在实例化后立即可用，无需额外初始化
-type list[K cmp.Ordered, V any] struct {
+type list[K comparable, V any] struct {
 	// root 指向链表的头和尾
-	root *Element[K, V]
+	root               *Element[K, V]
+	compare.Compare[K] // 构造出如何比较K大小的函数来,这里会自动比较K的大小
 }
 
 // NewList 创建并返回一个新的双向链表
 func newList[K cmp.Ordered, V any]() *list[K, V] {
-	return &list[K, V]{root: &Element[K, V]{}}
+	return &list[K, V]{root: &Element[K, V]{}, Compare: cmp.Compare[K]}
 }
 
 // IsEmpty 判断链表是否为空
@@ -75,15 +80,14 @@ func (l *list[K, V]) Remove(e *Element[K, V]) {
 // Find 在链表中查找指定键的元素，如果找不到则返回nil
 func (l *list[K, V]) Find(key K) *Element[K, V] {
 	for e := l.root.next; e != nil; e = e.next {
-		if e.Key == key {
+		v := l.Compare(e.Key, key)
+		if v == 0 {
 			return e
 		}
-		// 如果键是有序的，可以提前终止搜索
-		if e.Key > key {
+		if v > 0 {
 			break
 		}
 	}
-
 	return nil
 }
 
@@ -133,7 +137,7 @@ func (l *list[K, V]) Insert(key K, value V) *Element[K, V] {
 
 	// 查找插入位置
 	current := l.root.next
-	for current != nil && current.Key < key {
+	for current != nil && l.Compare(current.Key, key) < 0 {
 		current = current.next
 	}
 
@@ -177,7 +181,7 @@ func (l *list[K, V]) InsertReverse(key K, value V) *Element[K, V] {
 
 	// 从尾部开始查找插入位置
 	current := l.root.prev
-	for current != nil && current.Key > key {
+	for current != nil && l.Compare(current.Key, key) > 0 {
 		current = current.prev
 	}
 

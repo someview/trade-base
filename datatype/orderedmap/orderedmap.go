@@ -2,17 +2,26 @@ package orderedmap
 
 import (
 	"cmp"
+
+	"github.com/someview/trade-base/datatype/compare"
 )
 
-type OrderedMap[K cmp.Ordered, V any] struct {
+type OrderedMap[K comparable, V any] struct {
 	kv map[K]*Element[K, V]
 	ll *list[K, V]
 }
 
-func NewOrderedMap[K cmp.Ordered, V any]() *OrderedMap[K, V] {
+func New[K cmp.Ordered, V any]() *OrderedMap[K, V] {
 	return &OrderedMap[K, V]{
 		kv: make(map[K]*Element[K, V]),
 		ll: newList[K, V](),
+	}
+}
+
+func NewWithCompare[K comparable, V any](comp compare.Compare[K]) *OrderedMap[K, V] {
+	return &OrderedMap[K, V]{
+		kv: make(map[K]*Element[K, V]),
+		ll: &list[K, V]{root: &Element[K, V]{}, Compare: comp},
 	}
 }
 
@@ -120,7 +129,7 @@ func (m *OrderedMap[K, V]) Next(key K) (v V, exist bool) {
 // Copy returns a new OrderedMap with the same elements.
 // Using Copy while there are concurrent writes may mangle the result.
 func (m *OrderedMap[K, V]) Copy() *OrderedMap[K, V] {
-	m2 := NewOrderedMap[K, V]()
+	m2 := NewWithCompare[K, V](m.ll.Compare)
 	for el := m.Front(); el != nil; el = el.Next() {
 		m2.Set(el.Key, el.Value)
 	}
@@ -131,7 +140,7 @@ func (m *OrderedMap[K, V]) Copy() *OrderedMap[K, V] {
 func (m *OrderedMap[K, V]) DeleteLessThan(threshold K) {
 	// 删除所有小于阈值的元素
 	el := m.Front()
-	for el != nil && el.Key < threshold {
+	for el != nil && m.ll.Compare(el.Key, threshold) < 0 {
 		// 保存当前元素的值和下一个元素
 		key := el.Key
 		nextEl := el.Next()
@@ -182,7 +191,7 @@ func (m *OrderedMap[K, V]) DeleteLessThanWithCallback(threshold K, callback func
 	el := m.Front()
 
 	// 删除所有小于阈值的元素
-	for el != nil && el.Key < threshold {
+	for el != nil && m.ll.Compare(el.Key, threshold) < 0 {
 		// 保存当前元素的值和下一个元素
 		key, value := el.Key, el.Value
 		nextEl := el.Next()

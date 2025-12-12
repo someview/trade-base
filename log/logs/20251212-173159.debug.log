@@ -1,0 +1,1 @@
+2025-12-12T09:31:59.6110171Z	ERROR	trade-base/log/api_test.go:18		test LogWithPC	MAP=iter{111=sss1{Age=234, TTT2=sss2{Age=567}}, 222=sss1{Age=345, TTT2=sss2{Age=678}}}
