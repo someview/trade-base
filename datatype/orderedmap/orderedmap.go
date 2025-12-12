@@ -185,27 +185,32 @@ func (m *OrderedMap[K, V]) RangeReverse(fn func(K, V) bool) {
 	}
 }
 
-// DeleteLessThanWithCallback 删除所有键小于给定阈值的条目，并为每个被删除的元素调用回调函数
-func (m *OrderedMap[K, V]) DeleteLessThanWithCallback(threshold K, callback func(K, V)) {
-	// 从头开始遍历
-	el := m.Front()
-
-	// 删除所有小于阈值的元素
-	for el != nil && m.ll.Compare(el.Key, threshold) < 0 {
-		// 保存当前元素的值和下一个元素
-		key, value := el.Key, el.Value
+func (m *OrderedMap[K, V]) RangeDelete(fn func(k K, v V) (deleted, next bool)) {
+	for el := m.Front(); el != nil; {
+		del, cont := fn(el.Key, el.Value)
 		nextEl := el.Next()
-
-		// 从链表和映射中删除当前元素
-		m.ll.Remove(el)
-		delete(m.kv, key)
-
-		// 调用回调函数
-		if callback != nil {
-			callback(key, value)
+		if del {
+			m.ll.Remove(el)
+			delete(m.kv, el.Key)
 		}
-
-		// 移动到下一个元素
+		if !cont {
+			break
+		}
 		el = nextEl
+	}
+}
+
+func (m *OrderedMap[K, V]) RangeReverseDelete(fn func(k K, v V) (deleted, next bool)) {
+	for el := m.Back(); el != nil; {
+		del, cont := fn(el.Key, el.Value)
+		prevEl := el.Prev()
+		if del {
+			m.ll.Remove(el)
+			delete(m.kv, el.Key)
+		}
+		if !cont {
+			break
+		}
+		el = prevEl
 	}
 }
