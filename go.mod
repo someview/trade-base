@@ -1,6 +1,6 @@
 module github.com/someview/trade-base
 
-go 1.24.5
+go 1.25
 
 require (
 	github.com/beevik/ntp v1.4.3

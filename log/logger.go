@@ -33,6 +33,7 @@ type Logger struct {
 	file       *os.File
 	filePath   string
 	writer     *bufio.Writer
+	encoder    Encoder
 	recordChan chan *Record
 	wg         sync.WaitGroup
 	shutdown   atomic.Bool
@@ -40,8 +41,18 @@ type Logger struct {
 	cancel     context.CancelFunc
 }
 
+type LoggerOption func(*Logger)
+
+func WithEncoder(enc Encoder) LoggerOption {
+	return func(l *Logger) {
+		if enc != nil {
+			l.encoder = enc
+		}
+	}
+}
+
 // NewLogger 创建一个新的日志器
-func NewLogger(config Config) (*Logger, error) {
+func NewLogger(config Config, opts ...LoggerOption) (*Logger, error) {
 	// 创建日志目录
 	if err := os.MkdirAll(config.LogPath, 0755); err != nil {
 		return nil, fmt.Errorf("创建日志目录失败: %w", err)
@@ -62,9 +73,14 @@ func NewLogger(config Config) (*Logger, error) {
 		file:       file,
 		filePath:   filePath,
 		writer:     bufio.NewWriterSize(file, config.BufferSize),
+		encoder:    NewFlatEncoder(),
 		recordChan: make(chan *Record, 2000),
 		ctx:        ctx,
 		cancel:     cancel,
+	}
+
+	for _, opt := range opts {
+		opt(logger)
 	}
 
 	// 启动日志处理工作器
@@ -72,6 +88,11 @@ func NewLogger(config Config) (*Logger, error) {
 	go logger.run()
 
 	return logger, nil
+}
+
+// NewLoggerWithEncoder 创建一个使用自定义编码器的日志器
+func NewLoggerWithEncoder(config Config, enc Encoder) (*Logger, error) {
+	return NewLogger(config, WithEncoder(enc))
 }
 
 // NewRecord 创建一个新的日志记录，可供外部使用
@@ -131,7 +152,8 @@ func (l *Logger) calculateNextDailyCompressTimer() *time.Timer {
 // handleRecord 处理单条日志记录
 func (l *Logger) handleRecord(record *Record) {
 	if !record.encoded {
-		record.format()
+		record.buffer = l.encoder.Encode(record)
+		record.encoded = true
 	}
 	// 写入缓冲区
 	_, err := l.writer.Write(record.Buffer())
@@ -349,8 +371,8 @@ func (l *Logger) writeAsync(r *Record) {
 	case l.recordChan <- r:
 		// 成功发送
 	default:
+		r.buffer = l.encoder.Encode(r)
 		r.encoded = true
-		r.format()
 		l.recordChan <- r
 		slog.Info("logger write loop is too busy")
 	}

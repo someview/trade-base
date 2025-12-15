@@ -26,7 +26,6 @@ func (l *Logger) Log(level LogLevel, msg string, attrs ...Attr) {
 	}
 	record := NewRecord(level, msg)
 	record.attrs = append(record.attrs, attrs...)
-	record.format()
 	l.writeAsync(record)
 }
 
@@ -37,7 +36,6 @@ func (l *Logger) LogWithPC(pc uintptr, level LogLevel, msg string, attrs ...Attr
 	record := NewRecord(ErrorLevel, msg)
 	record.pc = pc
 	record.attrs = append(record.attrs, attrs...)
-	record.format()
 	l.writeAsync(record)
 }
 
@@ -47,7 +45,6 @@ func (l *Logger) LogRecord(record *Record) {
 		return
 	}
 	// 格式化日志记录
-	record.format()
 	// 发送到处理通道
 	l.writeAsync(record)
 }

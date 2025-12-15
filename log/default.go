@@ -125,6 +125,7 @@ func newTestLogger(config Config) (*Logger, error) {
 		file:       file,
 		filePath:   filePath,
 		writer:     bufio.NewWriterSize(file, config.BufferSize),
+		encoder:    NewJSONEncoder(),
 		recordChan: make(chan *Record, 2000),
 		ctx:        ctx,
 		cancel:     cancel,
