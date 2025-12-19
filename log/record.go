@@ -168,14 +168,18 @@ func (r *Record) appendAnyValue(val interface{}, currentDepth, maxDepth int) {
 		return
 	}
 
-	// 支持自定义编码
+	rv := reflect.ValueOf(val)
+	if isReflectNil(rv) {
+		r.writeString("nil")
+		return
+	}
+
 	if encodeVal, ok := val.(Formatter); ok {
 		encoder := r.Encoder()
 		encodeVal.Format(encoder)
 		return
 	}
 
-	rv := reflect.ValueOf(val)
 	for rv.Kind() == reflect.Ptr && !rv.IsNil() {
 		rv = rv.Elem()
 	}
@@ -183,7 +187,7 @@ func (r *Record) appendAnyValue(val interface{}, currentDepth, maxDepth int) {
 	switch rv.Kind() {
 	case reflect.Struct:
 		// 传递增加后的深度
-			if t, ok := val.(time.Time); ok {
+		if t, ok := val.(time.Time); ok {
 			r.writeTime(t)
 			return
 		}
