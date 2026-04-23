@@ -1,0 +1,1 @@
+2026-04-23T17:00:03.182114Z	ERROR	trade-base/log/api_test.go:18		test LogWithPC	slice=[1, sss1{Age=345, TTT2=sss2{Age=678}}, nil, nil, nil, nil, nil, nil, nil, nil]

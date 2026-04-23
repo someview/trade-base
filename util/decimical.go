@@ -35,3 +35,6 @@ func Float64Greater(a, b float64) bool {
 func Float64Less(a, b float64) bool {
 	return b-a > float64Epsilon
 }
+
+// QtyFilter 策略层专用：在计算仓位前，先按数量步进和精度进行过滤
+// 这里的 step 和 precision 是该币种/市场的原生属性
