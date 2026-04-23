@@ -32,7 +32,7 @@ func (e *JSONEncoder) Encode(r *Record) []byte {
 		slog.String("msg", r.msg),
 		slog.Time("time", r.time),
 		slog.Uint64("pc", uint64(r.pc)),
-		slog.Int("attrs_len", len(r.attrs)),
+		slog.Any("attrs", r.attrs),
 	)
 
 	// 直接写入 Record 的缓冲，避免额外分配
