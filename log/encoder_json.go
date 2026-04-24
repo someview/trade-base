@@ -26,15 +26,6 @@ func NewJSONEncoder() *JSONEncoder {
 }
 
 func (e *JSONEncoder) Encode(r *Record) []byte {
-	slog.Info(
-		"JSONEncoder Encode begin",
-		slog.String("level", string(r.level)),
-		slog.String("msg", r.msg),
-		slog.Time("time", r.time),
-		slog.Uint64("pc", uint64(r.pc)),
-		slog.Any("attrs", r.attrs),
-	)
-
 	// 直接写入 Record 的缓冲，避免额外分配
 	r.buffer = r.buffer[:0]
 	r.writeByte('{')
@@ -62,9 +53,7 @@ func (e *JSONEncoder) Encode(r *Record) []byte {
 	}
 	r.writeByte('}')
 	r.writeByte('\n')
-	out := r.Buffer()
-	slog.Info("JSONEncoder Encode end", slog.Int("bytes_len", len(out)))
-	return out
+	return r.Buffer()
 }
 
 // JSON 值编码器，供外部 Formatter 使用以生成 JSON 结构
